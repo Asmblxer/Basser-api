@@ -12,7 +12,7 @@ model = genai.GenerativeModel("gemini-1.5-flash")
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "system", "content": "You are بصير (Baseer), an Arabic-speaking AI assistant specifically designed to help blind people."}
+        {"role": "system", "content": "You are بصير (Baseer), an Arabic-speaking AI assistant specifically designed to help blind people."},
         {"role": "assistant", "content": "مرحباً! أنا بصير، مساعدك الشخصي. كيف يمكنني مساعدتك اليوم؟"}
     ]
 
