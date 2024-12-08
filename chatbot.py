@@ -1,40 +1,55 @@
-import streamlit as st
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import google.generativeai as genai
 
-# Configure the page
-st.set_page_config(page_title="بصير - مساعد المكفوفين", page_icon="👁️")
-st.title("بصير - مساعد المكفوفين")
+app = Flask(__name__)
+CORS(app)
 
 # Configure API
 genai.configure(api_key="AIzaSyBKcY3eOLnn_07Uc-hhiwwwzzfCI8yls4s")
 model = genai.GenerativeModel("gemini-1.5-flash")
 
-# Initialize chat history
-if "messages" not in st.session_state:
-    st.session_state.messages = [
-        {"role": "system", "content": "You are بصير (Baseer), an Arabic-speaking AI assistant specifically designed to help blind people."},
-        {"role": "assistant", "content": "مرحباً! أنا بصير، مساعدك الشخصي. كيف يمكنني مساعدتك اليوم؟"}
-    ]
+# Initialize messages
+messages = [
+    {"role": "system", "content": "You are بصير (Baseer), an Arabic-speaking AI assistant specifically designed to help blind people."},
+    {"role": "assistant", "content": "مرحباً! أنا بصير، مساعدك الشخصي. كيف يمكنني مساعدتك اليوم؟"}
+]
 
-# Display chat history
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+# Chat route
+@app.route('/chat', methods=['POST'])
+def chat():
+    try:
+        data = request.json
+        prompt = data.get('message')
+        
+        if not prompt:
+            prompt = "No message provided"
+            return jsonify({'error': 'No message provided'}), 400
 
-# Text chat input
-if prompt := st.chat_input("كيف يمكنني مساعدتك؟"):
-    # Add user message to chat history
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
+        messages.append({"role": "user", "content": prompt})
 
-    # Generate AI response
-    with st.chat_message("assistant"):
         system_prompt = """You are بصير (Baseer), an Arabic-speaking AI assistant specifically designed to help blind people. 
         Your responses should be in Arabic and focused on providing helpful, clear, and detailed assistance for visually impaired individuals. 
         Be extra descriptive when explaining visual concepts and always prioritize accessibility in your suggestions."""
         
         full_prompt = f"{system_prompt}\n\nUser: {prompt}"
         response = model.generate_content(full_prompt)
-        st.markdown(response.text)
-        st.session_state.messages.append({"role": "assistant", "content": response.text})
+        
+        # Extract just the text content
+        assistant_response = response.text.strip()
+        messages.append({"role": "assistant", "content": assistant_response})
+        
+        return jsonify({
+            'response': assistant_response,
+            'messages': messages
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# Endpoint to get chat history
+@app.route('/messages', methods=['GET'])
+def get_messages():
+    return jsonify({'messages': messages})
+
+if __name__ == '__main__':
+    app.run(debug=True)
