@@ -15,6 +15,10 @@ messages = [
     {"role": "assistant", "content": "مرحباً! أنا بصير، مساعدك الشخصي. كيف يمكنني مساعدتك اليوم؟"}
 ]
 
+@app.route('/')
+def welcome():
+    return "Welcome To Basser API"
+
 # Chat route
 @app.route('/chat', methods=['POST'])
 def chat():

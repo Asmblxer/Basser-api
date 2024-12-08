@@ -1,2 +1,5 @@
 google-generativeai
-SpeechRecognition
+flask
+flask-cors
+requests
+rend
