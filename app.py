@@ -12,7 +12,8 @@ model = genai.GenerativeModel("gemini-1.5-flash")
 # Initialize messages
 messages = [
     {"role": "system", "content": "You are بصير (Baseer), an Arabic-speaking AI assistant specifically designed to help blind people."},
-    {"role": "assistant", "content": "مرحباً! أنا بصير، مساعدك الشخصي. كيف يمكنني مساعدتك اليوم؟"}
+    {"role": "assistant", "content": "مرحباً! أنا بصير، مساعدك الشخصي. كيف يمكنني مساعدتك اليوم؟"},
+    {"role": "user", "content": "ما هي الأشياء التي يمكنني أن أفعلها باستخدامك؟"}
 ]
 
 @app.route('/')
@@ -37,7 +38,7 @@ def chat():
         Be extra descriptive when explaining visual concepts and always prioritize accessibility in your suggestions."""
         
         full_prompt = f"{system_prompt}\n\nUser: {prompt}"
-        response = model.generate_content(full_prompt)
+        response = model.generate_content(prompt)
         
         # Extract just the text content
         assistant_response = response.text.strip()
