@@ -45,7 +45,7 @@ def chat():
         messages.append({"role": "assistant", "content": assistant_response})
         
         return jsonify({
-            'message': assistant_response,
+            'message': assistant_response
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
